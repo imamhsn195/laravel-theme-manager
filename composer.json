@@ -1,0 +1,31 @@
+{
+    "name": "imamhsn195/laravel-theme-manager",
+    "description": "Laravel Theme Manager - Manage and license Laravel themes",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Imam Hasan",
+            "email": "imamhsn195@gmail.com",
+            "homepage": "https://imamhasan.me"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^11.0",
+        "jeroennoten/laravel-adminlte": "^3.15",
+        "spatie/laravel-permission": "^6.23"
+    },
+    "autoload": {
+        "psr-4": {
+            "ImamHasan\\ThemeManager\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ImamHasan\\ThemeManager\\Providers\\ThemeManagerServiceProvider"
+            ]
+        }
+    }
+}
