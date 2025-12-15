@@ -6,7 +6,7 @@ use Composer\InstalledVersions;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\View;
-use ImamHasan\ThemeManager\Models\Theme;
+use ImamHasan\ThemeManager\Models\TmTheme;
 use ImamHasan\ThemeManager\Models\ThemeSetting;
 use RuntimeException;
 
@@ -46,8 +46,8 @@ class ThemeService
 
         $this->cachedActiveTheme = $slug;
 
-        Theme::query()->update(['is_active' => false]);
-        Theme::where('slug', $slug)->update(['is_active' => true]);
+        TmTheme::query()->update(['is_active' => false]);
+        TmTheme::where('slug', $slug)->update(['is_active' => true]);
     }
 
     public function getThemePath(?string $slug = null): string
@@ -73,6 +73,24 @@ class ThemeService
      */
     public function discoverInstalledThemes(): array
     {
+        $discovered = [];
+
+        // Discover themes from Composer packages
+        $discovered = array_merge($discovered, $this->discoverComposerThemes());
+
+        // Discover themes from local directories
+        $discovered = array_merge($discovered, $this->discoverLocalThemes());
+
+        return $discovered;
+    }
+
+    /**
+     * Discover themes from Composer packages (vendor/)
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function discoverComposerThemes(): array
+    {
         if (! class_exists(InstalledVersions::class)) {
             return [];
         }
@@ -96,6 +114,51 @@ class ThemeService
 
             $discovered[] = array_merge($themeInfo, [
                 'package' => $packageName,
+                'source' => 'composer',
+                'path' => $installPath,
+            ]);
+        }
+
+        return $discovered;
+    }
+
+    /**
+     * Discover themes from local directories (themes/)
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function discoverLocalThemes(): array
+    {
+        $themeRoot = $this->config->get('theme-manager.theme_path', base_path('themes'));
+        $discovered = [];
+
+        if (! $this->files->isDirectory($themeRoot)) {
+            return $discovered;
+        }
+
+        $directories = $this->files->directories($themeRoot);
+
+        foreach ($directories as $directory) {
+            $themeJsonPath = $directory . DIRECTORY_SEPARATOR . 'theme.json';
+
+            if (! $this->files->exists($themeJsonPath)) {
+                continue;
+            }
+
+            $themeInfo = json_decode($this->files->get($themeJsonPath), true);
+
+            if (! is_array($themeInfo)) {
+                continue;
+            }
+
+            // Use directory name as slug if not specified
+            $slug = $themeInfo['slug'] ?? basename($directory);
+
+            $discovered[] = array_merge($themeInfo, [
+                'slug' => $slug,
+                'package' => $themeInfo['package'] ?? 'local/' . $slug,
+                'source' => 'local',
+                'path' => $directory,
             ]);
         }
 

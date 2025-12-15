@@ -5,10 +5,13 @@ namespace ImamHasan\ThemeManager\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use ImamHasan\ThemeManager\Traits\HasTablePrefix;
 
-class License extends Model
+class TmLicense extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTablePrefix;
+
+    protected $table = 'licenses';
 
     protected $fillable = [
         'theme_id',
@@ -27,6 +30,6 @@ class License extends Model
 
     public function theme(): BelongsTo
     {
-        return $this->belongsTo(Theme::class);
+        return $this->belongsTo(TmTheme::class);
     }
 }

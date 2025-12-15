@@ -1,6 +1,14 @@
 <?php
 
 return [
+    // Control auto-loading to prevent conflicts with existing migrations/routes
+    'load_migrations' => env('THEME_MANAGER_LOAD_MIGRATIONS', true),
+    'load_routes' => env('THEME_MANAGER_LOAD_ROUTES', true),
+
+    // Table prefix to avoid conflicts with existing tables
+    // Set to empty string '' to disable prefixing
+    'table_prefix' => env('THEME_MANAGER_TABLE_PREFIX', ''),
+
     'active_theme' => env('ACTIVE_THEME', null),
 
     'theme_path' => base_path('themes'),

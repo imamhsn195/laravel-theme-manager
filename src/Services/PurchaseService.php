@@ -6,10 +6,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Str;
-use ImamHasan\ThemeManager\Models\License;
+use ImamHasan\ThemeManager\Models\TmLicense;
 use ImamHasan\ThemeManager\Models\MarketplaceTheme;
-use ImamHasan\ThemeManager\Models\Purchase;
-use ImamHasan\ThemeManager\Models\Theme;
+use ImamHasan\ThemeManager\Models\TmPurchase;
+use ImamHasan\ThemeManager\Models\TmTheme;
 use ImamHasan\ThemeManager\Services\DistributionService;
 use ImamHasan\ThemeManager\Services\Payments\PaymentGatewayManager;
 
@@ -22,14 +22,14 @@ class PurchaseService
     ) {
     }
 
-    public function processPurchase(int $themeId, int $userId, array $paymentData): Purchase
+    public function processPurchase(int $themeId, int $userId, array $paymentData): TmPurchase
     {
         return DB::transaction(function () use ($themeId, $userId, $paymentData) {
             $theme = MarketplaceTheme::findOrFail($themeId);
             $currency = config('theme-manager.payments.currency', config('theme-manager.marketplace.currency', 'USD'));
             $gatewayName = $paymentData['gateway'] ?? config('theme-manager.payments.default', 'stripe');
 
-            $purchase = Purchase::create([
+            $purchase = TmPurchase::create([
                 'user_id' => $userId,
                 'marketplace_theme_id' => $theme->id,
                 'order_number' => $this->generateOrderNumber(),
@@ -73,7 +73,7 @@ class PurchaseService
 
             $purchase->refresh()->update(['status' => 'completed']);
 
-            if ($license instanceof License) {
+            if ($license instanceof TmLicense) {
                 $purchase->setRelation('license', $license);
             }
 
@@ -99,7 +99,7 @@ class PurchaseService
         }
     }
 
-    protected function maybeIssueLicense(MarketplaceTheme $marketplaceTheme, int $userId, Purchase $purchase): ?License
+    protected function maybeIssueLicense(MarketplaceTheme $marketplaceTheme, int $userId, TmPurchase $purchase): ?TmLicense
     {
         if (! $marketplaceTheme->license_required || ! $marketplaceTheme->package_name) {
             return null;
@@ -109,7 +109,7 @@ class PurchaseService
             return null;
         }
 
-        $theme = Theme::where('package', $marketplaceTheme->package_name)->first();
+        $theme = TmTheme::where('package', $marketplaceTheme->package_name)->first();
 
         if (! $theme) {
             return null;
@@ -127,7 +127,7 @@ class PurchaseService
         return $license;
     }
 
-    protected function prepareDistribution(Purchase $purchase, MarketplaceTheme $theme): void
+    protected function prepareDistribution(TmPurchase $purchase, MarketplaceTheme $theme): void
     {
         $method = config('theme-manager.distribution.method', 'zip');
 

@@ -4,8 +4,8 @@ namespace ImamHasan\ThemeManager\Http\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use ImamHasan\ThemeManager\Models\License;
-use ImamHasan\ThemeManager\Models\Purchase;
+use ImamHasan\ThemeManager\Models\TmLicense;
+use ImamHasan\ThemeManager\Models\TmPurchase;
 use ImamHasan\ThemeManager\Services\MarketplaceService;
 
 class MarketplaceController extends Controller
@@ -34,15 +34,15 @@ class MarketplaceController extends Controller
     public function dashboard(): View
     {
         $userId = auth()->id();
-        $purchases = Purchase::with('theme')->where('user_id', $userId)->latest()->paginate(10);
-        $licenses = License::with('theme')->where('user_id', $userId)->latest()->get();
+        $purchases = TmPurchase::with('theme')->where('user_id', $userId)->latest()->paginate(10);
+        $licenses = TmLicense::with('theme')->where('user_id', $userId)->latest()->get();
 
         return view('theme-manager::marketplace.dashboard', compact('purchases', 'licenses'));
     }
 
     public function download(int $purchaseId): View
     {
-        $purchase = Purchase::with(['theme', 'license'])
+        $purchase = TmPurchase::with(['theme', 'license'])
             ->where('user_id', auth()->id())
             ->findOrFail($purchaseId);
 

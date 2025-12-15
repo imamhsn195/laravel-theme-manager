@@ -6,13 +6,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use ImamHasan\ThemeManager\Models\Product;
+use ImamHasan\ThemeManager\Models\TmProduct;
 
 class ProductController extends Controller
 {
     public function index(): View
     {
-        $products = Product::paginate(20);
+        $products = TmProduct::paginate(20);
 
         return view('theme-manager::admin.products.index', compact('products'));
     }
@@ -26,7 +26,7 @@ class ProductController extends Controller
             'stock' => ['required', 'integer'],
         ]);
 
-        Product::create($data);
+        TmProduct::create($data);
 
         return back()->with('status', 'Product created.');
     }

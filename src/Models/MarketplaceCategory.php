@@ -5,10 +5,13 @@ namespace ImamHasan\ThemeManager\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ImamHasan\ThemeManager\Traits\HasTablePrefix;
 
 class MarketplaceCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTablePrefix;
+
+    protected $table = 'marketplace_categories';
 
     protected $fillable = [
         'name',

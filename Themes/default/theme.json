@@ -1,0 +1,10 @@
+{
+    "name": "Default Theme",
+    "slug": "default",
+    "version": "1.0.0",
+    "description": "The default theme for Laravel Theme Manager",
+    "license_required": false,
+    "author": "Imam Hasan",
+    "premium": false
+}
+

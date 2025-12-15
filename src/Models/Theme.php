@@ -5,10 +5,13 @@ namespace ImamHasan\ThemeManager\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ImamHasan\ThemeManager\Traits\HasTablePrefix;
 
-class Theme extends Model
+class TmTheme extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTablePrefix;
+
+    protected $table = 'themes';
 
     protected $fillable = [
         'name',
@@ -29,6 +32,6 @@ class Theme extends Model
 
     public function licenses(): HasMany
     {
-        return $this->hasMany(License::class);
+        return $this->hasMany(TmLicense::class);
     }
 }

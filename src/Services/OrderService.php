@@ -3,15 +3,15 @@
 namespace ImamHasan\ThemeManager\Services;
 
 use Illuminate\Support\Facades\Str;
-use ImamHasan\ThemeManager\Models\Order;
-use ImamHasan\ThemeManager\Models\OrderItem;
-use ImamHasan\ThemeManager\Models\Product;
+use ImamHasan\ThemeManager\Models\TmOrder;
+use ImamHasan\ThemeManager\Models\TmOrderItem;
+use ImamHasan\ThemeManager\Models\TmProduct;
 
 class OrderService
 {
-    public function create(array $customerData, array $cartItems): Order
+    public function create(array $customerData, array $cartItems): TmOrder
     {
-        $order = Order::create([
+        $order = TmOrder::create([
             'user_id' => $customerData['user_id'] ?? null,
             'order_number' => $this->generateOrderNumber(),
             'total' => $this->calculateTotal($cartItems),
@@ -22,13 +22,13 @@ class OrderService
         ]);
 
         foreach ($cartItems as $item) {
-            $product = Product::find($item['product_id']);
+            $product = TmProduct::find($item['product_id']);
 
             if (! $product) {
                 continue;
             }
 
-            OrderItem::create([
+            TmOrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $product->id,
                 'name' => $product->name,
@@ -46,7 +46,7 @@ class OrderService
         $sum = 0;
 
         foreach ($items as $item) {
-            $product = Product::find($item['product_id']);
+            $product = TmProduct::find($item['product_id']);
             if ($product) {
                 $sum += ($product->price * $item['quantity']);
             }

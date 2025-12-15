@@ -8,11 +8,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use ImamHasan\ThemeManager\Models\MarketplaceTheme;
-use ImamHasan\ThemeManager\Models\Purchase;
+use ImamHasan\ThemeManager\Models\TmPurchase;
 
 class DistributionService
 {
-    public function issueToken(Purchase $purchase, MarketplaceTheme $theme): array
+    public function issueToken(TmPurchase $purchase, MarketplaceTheme $theme): array
     {
         $method = config('theme-manager.distribution.method', 'zip');
 
@@ -24,7 +24,7 @@ class DistributionService
         };
     }
 
-    protected function prepareZipToken(Purchase $purchase, MarketplaceTheme $theme): array
+    protected function prepareZipToken(TmPurchase $purchase, MarketplaceTheme $theme): array
     {
         $storagePath = rtrim(config('theme-manager.distribution.zip_storage'), DIRECTORY_SEPARATOR);
         $zipPath = $storagePath . DIRECTORY_SEPARATOR . ($theme->slug ?? $theme->id) . '.zip';
@@ -39,7 +39,7 @@ class DistributionService
         return ['token' => $token, 'path' => $zipPath];
     }
 
-    protected function preparePackagistToken(Purchase $purchase, MarketplaceTheme $theme): array
+    protected function preparePackagistToken(TmPurchase $purchase, MarketplaceTheme $theme): array
     {
         $token = Str::random(32);
         $repository = config('theme-manager.distribution.packagist.repository');
@@ -53,7 +53,7 @@ class DistributionService
         return ['token' => $token, 'instructions' => $instructions];
     }
 
-    protected function prepareGenericToken(Purchase $purchase): array
+    protected function prepareGenericToken(TmPurchase $purchase): array
     {
         $token = Str::uuid()->toString();
         $purchase->update(['download_token' => $token]);

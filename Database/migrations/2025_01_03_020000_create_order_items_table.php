@@ -3,14 +3,19 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ImamHasan\ThemeManager\Helpers\TablePrefixHelper;
 
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('order_items', function (Blueprint $table) {
+        $tableName = TablePrefixHelper::getTableName('order_items');
+        $ordersTable = TablePrefixHelper::getTableName('orders');
+        $productsTable = TablePrefixHelper::getTableName('products');
+        
+        Schema::create($tableName, function (Blueprint $table) use ($ordersTable, $productsTable) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained('products');
+            $table->foreignId('order_id')->constrained($ordersTable)->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained($productsTable);
             $table->string('name');
             $table->decimal('price', 10, 2);
             $table->integer('quantity')->default(1);
@@ -21,6 +26,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        $tableName = TablePrefixHelper::getTableName('order_items');
+        Schema::dropIfExists($tableName);
     }
 };

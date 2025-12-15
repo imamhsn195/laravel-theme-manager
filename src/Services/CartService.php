@@ -3,7 +3,7 @@
 namespace ImamHasan\ThemeManager\Services;
 
 use Illuminate\Contracts\Session\Session;
-use ImamHasan\ThemeManager\Models\Product;
+use ImamHasan\ThemeManager\Models\TmProduct;
 
 class CartService
 {
@@ -40,6 +40,6 @@ class CartService
     public function items()
     {
         $ids = array_keys($this->all());
-        return Product::whereIn('id', $ids)->get();
+        return TmProduct::whereIn('id', $ids)->get();
     }
 }

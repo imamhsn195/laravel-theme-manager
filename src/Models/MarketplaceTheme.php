@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ImamHasan\ThemeManager\Traits\HasTablePrefix;
 
 class MarketplaceTheme extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTablePrefix;
+
+    protected $table = 'marketplace_themes';
 
     protected $fillable = [
         'name',
@@ -54,6 +57,6 @@ class MarketplaceTheme extends Model
 
     public function purchases(): HasMany
     {
-        return $this->hasMany(Purchase::class, 'marketplace_theme_id');
+        return $this->hasMany(TmPurchase::class, 'marketplace_theme_id');
     }
 }

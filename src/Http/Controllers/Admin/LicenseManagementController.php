@@ -6,8 +6,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use ImamHasan\ThemeManager\Models\License;
-use ImamHasan\ThemeManager\Models\Theme;
+use ImamHasan\ThemeManager\Models\TmLicense;
+use ImamHasan\ThemeManager\Models\TmTheme;
 use ImamHasan\ThemeManager\Services\LicenseService;
 
 class LicenseManagementController extends Controller
@@ -18,8 +18,8 @@ class LicenseManagementController extends Controller
 
     public function index(): View
     {
-        $licenses = License::with('theme')->latest()->paginate(20);
-        $themes = Theme::orderBy('name')->pluck('name', 'id');
+        $licenses = TmLicense::with('theme')->latest()->paginate(20);
+        $themes = TmTheme::orderBy('name')->pluck('name', 'id');
 
         return view('theme-manager::admin.licenses.index', compact('licenses', 'themes'));
     }

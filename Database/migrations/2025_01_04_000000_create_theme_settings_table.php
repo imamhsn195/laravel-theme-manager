@@ -3,11 +3,14 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ImamHasan\ThemeManager\Helpers\TablePrefixHelper;
 
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('theme_settings', function (Blueprint $table) {
+        $tableName = TablePrefixHelper::getTableName('theme_settings');
+        
+        Schema::create($tableName, function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique();
             $table->text('value')->nullable();
@@ -17,6 +20,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('theme_settings');
+        $tableName = TablePrefixHelper::getTableName('theme_settings');
+        Schema::dropIfExists($tableName);
     }
 };

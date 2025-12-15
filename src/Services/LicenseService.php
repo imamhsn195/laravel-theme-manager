@@ -5,14 +5,14 @@ namespace ImamHasan\ThemeManager\Services;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
-use ImamHasan\ThemeManager\Models\License;
-use ImamHasan\ThemeManager\Models\Theme;
+use ImamHasan\ThemeManager\Models\TmLicense;
+use ImamHasan\ThemeManager\Models\TmTheme;
 
 class LicenseService
 {
     public function validateTheme(string $themeSlug, ?string $domain = null): bool
     {
-        $theme = Theme::where('slug', $themeSlug)->first();
+        $theme = TmTheme::where('slug', $themeSlug)->first();
 
         if (! $theme) {
             return false;
@@ -22,7 +22,7 @@ class LicenseService
             return true;
         }
 
-        $license = License::where('theme_id', $theme->id)
+        $license = TmLicense::where('theme_id', $theme->id)
             ->where('domain', $domain ?? $this->currentDomain())
             ->where('status', 'active')
             ->first();
@@ -34,7 +34,7 @@ class LicenseService
         return $this->validateLicenseKey($license->license_key);
     }
 
-    public function create(array $attributes): License
+    public function create(array $attributes): TmLicense
     {
         if (! isset($attributes['license_key'])) {
             $attributes['license_key'] = $this->generateLicenseKey();
@@ -46,14 +46,14 @@ class LicenseService
 
         $attributes['license_key'] = $this->encryptLicenseKey($attributes['license_key']);
 
-        return License::create($attributes);
+        return TmLicense::create($attributes);
     }
 
-    public function registerLicense(string $themeSlug, string $licenseKey, ?string $domain = null): License
+    public function registerLicense(string $themeSlug, string $licenseKey, ?string $domain = null): TmLicense
     {
-        $theme = Theme::where('slug', $themeSlug)->firstOrFail();
+        $theme = TmTheme::where('slug', $themeSlug)->firstOrFail();
 
-        return License::updateOrCreate(
+        return TmLicense::updateOrCreate(
             [
                 'theme_id' => $theme->id,
                 'domain' => $domain ?? $this->currentDomain(),

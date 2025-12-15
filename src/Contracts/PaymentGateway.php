@@ -2,8 +2,8 @@
 
 namespace ImamHasan\ThemeManager\Contracts;
 
-use ImamHasan\ThemeManager\Models\Order;
-use ImamHasan\ThemeManager\Models\Purchase;
+use ImamHasan\ThemeManager\Models\TmOrder;
+use ImamHasan\ThemeManager\Models\TmPurchase;
 
 interface PaymentGateway
 {

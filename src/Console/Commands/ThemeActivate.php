@@ -3,7 +3,7 @@
 namespace ImamHasan\ThemeManager\Console\Commands;
 
 use Illuminate\Console\Command;
-use ImamHasan\ThemeManager\Models\Theme;
+use ImamHasan\ThemeManager\Models\TmTheme;
 use ImamHasan\ThemeManager\Services\ThemeService;
 
 class ThemeActivate extends Command
@@ -15,14 +15,14 @@ class ThemeActivate extends Command
     public function handle(ThemeService $themeService): int
     {
         $slug = $this->argument('slug');
-        $theme = Theme::where('slug', $slug)->first();
+        $theme = TmTheme::where('slug', $slug)->first();
 
         if (! $theme) {
             $this->error("Theme {$slug} not found. Run theme:discover first.");
             return self::FAILURE;
         }
 
-        Theme::query()->update(['is_active' => false]);
+        TmTheme::query()->update(['is_active' => false]);
         $theme->update(['is_active' => true]);
 
         $themeService->setActiveTheme($slug);

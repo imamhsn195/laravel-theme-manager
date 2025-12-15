@@ -5,10 +5,13 @@ namespace ImamHasan\ThemeManager\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ImamHasan\ThemeManager\Traits\HasTablePrefix;
 
-class Product extends Model
+class TmProduct extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTablePrefix;
+
+    protected $table = 'products';
 
     protected $fillable = [
         'name',
@@ -26,6 +29,6 @@ class Product extends Model
 
     public function orderItems(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(TmOrderItem::class);
     }
 }

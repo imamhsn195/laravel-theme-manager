@@ -46,12 +46,23 @@ class ThemeManagerServiceProvider extends ServiceProvider
     {
         $router->aliasMiddleware('theme-manager.admin', AdminMiddleware::class);
 
-        $this->loadMigrationsFrom(__DIR__ . '/../../Database/migrations');
-        $this->loadRoutesFrom(__DIR__ . '/../../Routes/admin.php');
-        $this->loadRoutesFrom(__DIR__ . '/../../Routes/web.php');
-        $this->loadRoutesFrom(__DIR__ . '/../../Routes/shop.php');
-        $this->loadRoutesFrom(__DIR__ . '/../../Routes/admin_shop.php');
+        // Conditionally load migrations to avoid conflicts with existing tables
+        if ($this->shouldLoadMigrations()) {
+            $this->loadMigrationsFrom(__DIR__ . '/../../Database/migrations');
+        }
+
+        // Conditionally load routes to avoid conflicts with existing routes
+        if ($this->shouldLoadRoutes()) {
+            $this->loadRoutesFrom(__DIR__ . '/../../Routes/admin.php');
+            $this->loadRoutesFrom(__DIR__ . '/../../Routes/web.php');
+            $this->loadRoutesFrom(__DIR__ . '/../../Routes/shop.php');
+            $this->loadRoutesFrom(__DIR__ . '/../../Routes/admin_shop.php');
+        }
+
         $this->loadViewsFrom(__DIR__ . '/../../Resources/views', 'theme-manager');
+
+        // Register views from local themes
+        $this->registerLocalThemeViews();
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -63,6 +74,54 @@ class ThemeManagerServiceProvider extends ServiceProvider
         }
 
         $this->registerPublishing();
+    }
+
+    /**
+     * Register views from local theme directories
+     */
+    protected function registerLocalThemeViews(): void
+    {
+        $themeService = $this->app->make(ThemeService::class);
+        $themeRoot = $this->app['config']->get('theme-manager.theme_path', base_path('themes'));
+        $files = $this->app['files'];
+
+        if (! $files->isDirectory($themeRoot)) {
+            return;
+        }
+
+        $directories = $files->directories($themeRoot);
+
+        foreach ($directories as $directory) {
+            $themeJsonPath = $directory . DIRECTORY_SEPARATOR . 'theme.json';
+
+            if (! $files->exists($themeJsonPath)) {
+                continue;
+            }
+
+            $themeInfo = json_decode($files->get($themeJsonPath), true);
+
+            if (! is_array($themeInfo)) {
+                continue;
+            }
+
+            $slug = $themeInfo['slug'] ?? basename($directory);
+            $viewNamespace = 'theme-' . $slug;
+
+            // Try multiple possible view directory structures
+            $viewPaths = [
+                $directory . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Views',
+                $directory . DIRECTORY_SEPARATOR . 'Views',
+                $directory . DIRECTORY_SEPARATOR . 'views',
+                $directory . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'views',
+            ];
+
+            foreach ($viewPaths as $viewPath) {
+                if ($files->isDirectory($viewPath)) {
+                    $this->loadViewsFrom($viewPath, $viewNamespace);
+                    break;
+                }
+            }
+        }
     }
 
     protected function registerPublishing(): void
@@ -80,7 +139,25 @@ class ThemeManagerServiceProvider extends ServiceProvider
         ], 'theme-manager-assets');
 
         $this->publishes([
-            __DIR__ . '/../../Database/migrations/' => database_path('migrations'),
+            __DIR__ . '/../../Database/migrations/' => database_path('migrations/theme-manager'),
         ], 'theme-manager-migrations');
+    }
+
+    /**
+     * Check if migrations should be auto-loaded.
+     * Set 'theme-manager.load_migrations' to false in config to disable.
+     */
+    protected function shouldLoadMigrations(): bool
+    {
+        return $this->app['config']->get('theme-manager.load_migrations', true);
+    }
+
+    /**
+     * Check if routes should be auto-loaded.
+     * Set 'theme-manager.load_routes' to false in config to disable.
+     */
+    protected function shouldLoadRoutes(): bool
+    {
+        return $this->app['config']->get('theme-manager.load_routes', true);
     }
 }

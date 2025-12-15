@@ -3,11 +3,15 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ImamHasan\ThemeManager\Helpers\TablePrefixHelper;
 
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('marketplace_themes', function (Blueprint $table) {
+        $tableName = TablePrefixHelper::getTableName('marketplace_themes');
+        $categoriesTable = TablePrefixHelper::getTableName('marketplace_categories');
+        
+        Schema::create($tableName, function (Blueprint $table) use ($categoriesTable) {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
@@ -23,7 +27,7 @@ return new class extends Migration {
             $table->string('package_name')->nullable();
             $table->string('version')->default('1.0.0');
             $table->foreignId('author_id')->nullable()->constrained('users');
-            $table->foreignId('category_id')->nullable()->constrained('marketplace_categories');
+            $table->foreignId('category_id')->nullable()->constrained($categoriesTable);
             $table->json('tags')->nullable();
             $table->json('features')->nullable();
             $table->integer('sales_count')->default(0);
@@ -39,6 +43,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('marketplace_themes');
+        $tableName = TablePrefixHelper::getTableName('marketplace_themes');
+        Schema::dropIfExists($tableName);
     }
 };

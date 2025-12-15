@@ -11,10 +11,14 @@ This package provides theme discovery, activation, licensing, and optional marke
 
 ### Artisan Commands
 
-- `php artisan theme:discover` — scan installed `laravel-theme` packages
+- `php artisan theme:discover` — scan for themes from Composer packages and local directories
 - `php artisan theme:activate modern` — mark a theme active
-- `php artisan theme:publish modern` — publish the theme asset tag (`theme-modern-assets`)
+- `php artisan theme:publish modern` — publish theme assets (works for both Composer and local themes)
 - `php artisan theme:license modern LICENSE-KEY domain.com` — persist a license for a theme/domain
+
+### Local Theme Development
+
+The theme manager supports both Composer packages and local theme development. Place themes in the `themes/` directory (configurable via `theme-manager.theme_path`) with a `theme.json` file, and run `theme:discover` to register them. See `USER_GUIDE.md` for detailed instructions.
 
 ### Admin Access & Permissions
 

@@ -3,11 +3,14 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ImamHasan\ThemeManager\Helpers\TablePrefixHelper;
 
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
+        $tableName = TablePrefixHelper::getTableName('orders');
+        
+        Schema::create($tableName, function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->string('order_number')->unique();
@@ -25,6 +28,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        $tableName = TablePrefixHelper::getTableName('orders');
+        Schema::dropIfExists($tableName);
     }
 };

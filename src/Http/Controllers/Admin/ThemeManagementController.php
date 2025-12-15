@@ -6,7 +6,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use ImamHasan\ThemeManager\Models\Theme;
+use ImamHasan\ThemeManager\Models\TmTheme;
 use ImamHasan\ThemeManager\Services\ThemeService;
 
 class ThemeManagementController extends Controller
@@ -17,14 +17,14 @@ class ThemeManagementController extends Controller
 
     public function index(): View
     {
-        $themes = Theme::query()->orderBy('name')->get();
+        $themes = TmTheme::query()->orderBy('name')->get();
 
         return view('theme-manager::admin.themes.index', compact('themes'));
     }
 
     public function activate(string $slug): RedirectResponse
     {
-        $theme = Theme::where('slug', $slug)->firstOrFail();
+        $theme = TmTheme::where('slug', $slug)->firstOrFail();
         $theme->update(['is_active' => true]);
 
         $this->themeService->setActiveTheme($theme->slug);
@@ -34,7 +34,7 @@ class ThemeManagementController extends Controller
 
     public function deactivate(string $slug): RedirectResponse
     {
-        $theme = Theme::where('slug', $slug)->firstOrFail();
+        $theme = TmTheme::where('slug', $slug)->firstOrFail();
         $theme->update(['is_active' => false]);
 
         return back()->with('status', "Theme {$theme->name} deactivated.");

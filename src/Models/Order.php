@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ImamHasan\ThemeManager\Traits\HasTablePrefix;
 
-class Order extends Model
+class TmOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTablePrefix;
+
+    protected $table = 'orders';
 
     protected $fillable = [
         'user_id',
@@ -31,7 +34,7 @@ class Order extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(TmOrderItem::class);
     }
 
     public function user(): BelongsTo
