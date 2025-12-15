@@ -10,9 +10,9 @@ use ImamHasan\ThemeManager\Services\ThemeService;
 
 class ThemePublish extends Command
 {
-    protected $signature = 'theme:publish {slug} {--force}';
+    protected $signature = 'theme:publish {slug : The theme slug to publish assets for} {--force : Overwrite existing assets without confirmation}';
 
-    protected $description = 'Publish the assets for a theme to the public directory.';
+    protected $description = 'Publish theme assets (CSS, JS, images) from the theme directory to the public directory.';
 
     public function handle(ThemeService $themeService): int
     {

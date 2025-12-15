@@ -7,9 +7,9 @@ use ImamHasan\ThemeManager\Services\LicenseService;
 
 class ThemeLicenseRegister extends Command
 {
-    protected $signature = 'theme:license {slug} {license_key} {domain?}';
+    protected $signature = 'theme:license {slug : The theme slug to register the license for} {license_key : The license key for the theme} {domain? : Optional domain to associate with the license}';
 
-    protected $description = 'Store or update the license key for a theme.';
+    protected $description = 'Store or update the license key for a theme. Required for premium themes that need license validation.';
 
     public function handle(LicenseService $licenseService): int
     {

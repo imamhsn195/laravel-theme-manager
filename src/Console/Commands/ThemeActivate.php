@@ -8,9 +8,9 @@ use ImamHasan\ThemeManager\Services\ThemeService;
 
 class ThemeActivate extends Command
 {
-    protected $signature = 'theme:activate {slug}';
+    protected $signature = 'theme:activate {slug : The theme slug to activate}';
 
-    protected $description = 'Activate a discovered theme and set it as current.';
+    protected $description = 'Activate a discovered theme and set it as the current active theme for the application.';
 
     public function handle(ThemeService $themeService): int
     {

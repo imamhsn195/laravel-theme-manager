@@ -10,7 +10,7 @@ class ThemeDiscover extends Command
 {
     protected $signature = 'theme:discover';
 
-    protected $description = 'Scan for Laravel themes from Composer packages and local directories.';
+    protected $description = 'Scan for Laravel themes from Composer packages and local directories and register them in the database.';
 
     public function handle(ThemeService $themeService): int
     {
