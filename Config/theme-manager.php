@@ -13,7 +13,8 @@ return [
 
     'theme_path' => base_path('themes'),
 
-    'asset_path' => 'themes',
+    // Asset path in public directory (assets go to public/{themename}/)
+    'asset_path' => '', // Empty means assets go directly to public/{themename}/
 
     'admin_middleware' => ['web', 'auth', 'theme-manager.admin'],
     'admin_roles' => ['theme-admin'],

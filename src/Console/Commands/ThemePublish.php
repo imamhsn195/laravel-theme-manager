@@ -51,13 +51,15 @@ class ThemePublish extends Command
 
     /**
      * Publish assets from a local theme directory
+     * Assets are copied from themes/{slug}/assets to public/{slug}
      */
     protected function publishLocalTheme(TmTheme $theme, string $themePath): int
     {
+        // Check for assets in theme directory (themes/{slug}/assets)
         $assetPaths = [
-            $themePath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Assets',
-            $themePath . DIRECTORY_SEPARATOR . 'Assets',
             $themePath . DIRECTORY_SEPARATOR . 'assets',
+            $themePath . DIRECTORY_SEPARATOR . 'Assets',
+            $themePath . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Assets',
             $themePath . DIRECTORY_SEPARATOR . 'public',
         ];
 
@@ -70,15 +72,15 @@ class ThemePublish extends Command
         }
 
         if (! $sourcePath) {
-            $this->warn("No assets directory found for theme {$theme->slug}. Skipping asset publishing.");
+            $this->warn("No assets directory found in theme folder. Assets should be in public/{$theme->slug}/ directly.");
             return self::SUCCESS;
         }
 
-        $assetPath = $this->laravel['config']->get('theme-manager.asset_path', 'themes');
-        $destinationPath = public_path($assetPath . DIRECTORY_SEPARATOR . $theme->slug);
+        // Assets go directly to public/{themename}/
+        $destinationPath = public_path($theme->slug);
 
         if (File::isDirectory($destinationPath) && ! $this->option('force')) {
-            if (! $this->confirm("Assets already exist. Overwrite?", false)) {
+            if (! $this->confirm("Assets already exist in {$destinationPath}. Overwrite?", false)) {
                 $this->info('Publishing cancelled.');
                 return self::SUCCESS;
             }

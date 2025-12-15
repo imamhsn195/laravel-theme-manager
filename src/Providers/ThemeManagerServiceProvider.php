@@ -78,6 +78,7 @@ class ThemeManagerServiceProvider extends ServiceProvider
 
     /**
      * Register views from local theme directories
+     * Views are expected in resources/views/{themename}/
      */
     protected function registerLocalThemeViews(): void
     {
@@ -107,19 +108,11 @@ class ThemeManagerServiceProvider extends ServiceProvider
             $slug = $themeInfo['slug'] ?? basename($directory);
             $viewNamespace = 'theme-' . $slug;
 
-            // Try multiple possible view directory structures
-            $viewPaths = [
-                $directory . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Views',
-                $directory . DIRECTORY_SEPARATOR . 'Views',
-                $directory . DIRECTORY_SEPARATOR . 'views',
-                $directory . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'views',
-            ];
+            // Views are in resources/views/{themename}/
+            $viewPath = resource_path('views' . DIRECTORY_SEPARATOR . $slug);
 
-            foreach ($viewPaths as $viewPath) {
-                if ($files->isDirectory($viewPath)) {
-                    $this->loadViewsFrom($viewPath, $viewNamespace);
-                    break;
-                }
+            if ($files->isDirectory($viewPath)) {
+                $this->loadViewsFrom($viewPath, $viewNamespace);
             }
         }
     }
