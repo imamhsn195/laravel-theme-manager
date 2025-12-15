@@ -15,6 +15,9 @@
     @if(config('theme-manager.asset_path'))
         <link rel="stylesheet" href="{{ asset(config('theme-manager.asset_path') . '/default/css/app.css') }}">
     @endif
+    
+    <!-- Theme Custom Styles -->
+    <link rel="stylesheet" href="{{ asset('default/css/style.css') }}">
 
     @stack('styles')
 </head>
@@ -34,6 +37,9 @@
     @if(config('theme-manager.asset_path'))
         <script src="{{ asset(config('theme-manager.asset_path') . '/default/js/app.js') }}"></script>
     @endif
+    
+    <!-- Theme Custom Scripts -->
+    <script src="{{ asset('default/js/app.js') }}"></script>
 
     @stack('scripts')
 </body>
