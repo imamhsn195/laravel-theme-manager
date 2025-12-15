@@ -30,11 +30,14 @@ class ThemeDiscover extends Command
             $source = $themeInfo['source'] ?? 'composer';
             $sourceLabel = $source === 'local' ? 'local' : 'composer';
 
+            $slug = $themeInfo['slug'] ?? $themeInfo['package'];
+
+            // Use slug as unique identifier since database has unique constraint on slug
             $theme = TmTheme::updateOrCreate(
-                ['package' => $themeInfo['package']],
+                ['slug' => $slug],
                 [
-                    'name' => $themeInfo['name'] ?? $themeInfo['slug'] ?? $themeInfo['package'],
-                    'slug' => $themeInfo['slug'] ?? $themeInfo['package'],
+                    'package' => $themeInfo['package'],
+                    'name' => $themeInfo['name'] ?? $slug,
                     'version' => $themeInfo['version'] ?? '1.0.0',
                     'description' => $themeInfo['description'] ?? null,
                     'license_required' => (bool) ($themeInfo['license_required'] ?? false),

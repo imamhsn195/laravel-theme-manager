@@ -63,6 +63,13 @@ class ThemeService
 
     public function getThemePathForSlug(string $slug): string
     {
+        // First check if theme exists in package's Themes directory
+        $packageThemePath = __DIR__ . '/../../Themes/' . $slug;
+        if ($this->files->isDirectory($packageThemePath) && $this->files->exists($packageThemePath . '/theme.json')) {
+            return $packageThemePath;
+        }
+
+        // Otherwise check local themes directory
         $themeRoot = $this->config->get('theme-manager.theme_path', base_path('themes'));
 
         return rtrim($themeRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $slug;
@@ -80,6 +87,9 @@ class ThemeService
 
         // Discover themes from local directories
         $discovered = array_merge($discovered, $this->discoverLocalThemes());
+
+        // Discover themes from package's Themes directory
+        $discovered = array_merge($discovered, $this->discoverPackageThemes());
 
         return $discovered;
     }
@@ -158,6 +168,49 @@ class ThemeService
                 'slug' => $slug,
                 'package' => $themeInfo['package'] ?? 'local/' . $slug,
                 'source' => 'local',
+                'path' => $directory,
+            ]);
+        }
+
+        return $discovered;
+    }
+
+    /**
+     * Discover themes from package's Themes directory
+     * This discovers themes that are bundled with the theme-manager package itself
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function discoverPackageThemes(): array
+    {
+        $discovered = [];
+        $packageThemesPath = __DIR__ . '/../../Themes';
+
+        if (! $this->files->isDirectory($packageThemesPath)) {
+            return $discovered;
+        }
+
+        $directories = $this->files->directories($packageThemesPath);
+
+        foreach ($directories as $directory) {
+            $themeJsonPath = $directory . DIRECTORY_SEPARATOR . 'theme.json';
+
+            if (! $this->files->exists($themeJsonPath)) {
+                continue;
+            }
+
+            $themeInfo = json_decode($this->files->get($themeJsonPath), true);
+
+            if (! is_array($themeInfo)) {
+                continue;
+            }
+
+            $slug = $themeInfo['slug'] ?? basename($directory);
+
+            $discovered[] = array_merge($themeInfo, [
+                'slug' => $slug,
+                'package' => $themeInfo['package'] ?? 'imamhsn195/laravel-theme-manager-default',
+                'source' => 'composer',
                 'path' => $directory,
             ]);
         }

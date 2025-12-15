@@ -64,6 +64,14 @@ class ThemeManagerServiceProvider extends ServiceProvider
         // Register views from local themes
         $this->registerLocalThemeViews();
 
+        // Register default theme service provider (it's part of this package)
+        if (class_exists(\ImamHasan\ThemeManager\Themes\Default\DefaultThemeServiceProvider::class)) {
+            $this->app->register(\ImamHasan\ThemeManager\Themes\Default\DefaultThemeServiceProvider::class);
+        }
+
+        // Register theme service providers from discovered themes
+        $this->registerThemeServiceProviders();
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ThemeActivate::class,
@@ -134,6 +142,38 @@ class ThemeManagerServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../Database/migrations/' => database_path('migrations/theme-manager'),
         ], 'theme-manager-migrations');
+    }
+
+    /**
+     * Register service providers from discovered themes
+     */
+    protected function registerThemeServiceProviders(): void
+    {
+        try {
+            $themes = \ImamHasan\ThemeManager\Models\TmTheme::all();
+
+            foreach ($themes as $theme) {
+                $config = $theme->config ?? [];
+                $themePath = $config['path'] ?? null;
+
+                if ($themePath && is_dir($themePath)) {
+                    $composerJsonPath = $themePath . DIRECTORY_SEPARATOR . 'composer.json';
+
+                    if (file_exists($composerJsonPath)) {
+                        $composerJson = json_decode(file_get_contents($composerJsonPath), true);
+                        $providers = $composerJson['extra']['laravel']['providers'] ?? [];
+
+                        foreach ($providers as $provider) {
+                            if (class_exists($provider)) {
+                                $this->app->register($provider);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Silently fail if database isn't ready or themes aren't discovered yet
+        }
     }
 
     /**

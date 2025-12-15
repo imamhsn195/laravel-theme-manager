@@ -25,6 +25,11 @@ class DefaultThemeServiceProvider extends ServiceProvider
             __DIR__ . '/../../resources/views',
             'theme-default'
         );
+
+        // Register publishable assets
+        $this->publishes([
+            __DIR__ . '/../assets' => public_path('default'),
+        ], 'theme-default-assets');
     }
 }
 
