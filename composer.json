@@ -18,7 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "ImamHasan\\ThemeManager\\": "src/"
+            "ImamHasan\\ThemeManager\\": "src/",
+            "ImamHasan\\ThemeManager\\Themes\\Default\\": "Themes/default/src/"
         }
     },
     "extra": {
